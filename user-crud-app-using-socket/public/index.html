@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users CRUD App</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+
+    <h1>Users CRUD App</h1>
+
+    <div id="user-form">
+        <input type="text" id="name" placeholder="Name" />
+        <input type="email" id="email" placeholder="Email" />
+        <button onclick="addUser()">Add User</button>
+    </div>
+
+    <div id="user-update">
+        <input type="number" id="update-id" placeholder="ID" />
+        <input type="text" id="update-name" placeholder="Name" />
+        <input type="email" id="update-email" placeholder="Email" />
+        <button onclick="updateUser()">Update User</button>
+    </div>
+
+    <div id="user-delete">
+        <input type="number" id="delete-id" placeholder="ID" />
+        <button onclick="deleteUser()">Delete User</button>
+    </div>
+
+    <div id="user-update-email">
+        <input type="number" id="update-email-id" placeholder="ID" />
+        <input type="email" id="update-email-email" placeholder="Email" />
+        <button onclick="updateUserEmail()">Update User Email</button>
+    </div>
+
+    <div id="user-update-name">
+        <input type="number" id="update-name-id" placeholder="ID" />
+        <input type="text" id="update-name-name" placeholder="Name" />
+        <button onclick="updateUserName()">Update User Name</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody id="result">
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // Listen for users data from server
+        socket.on('users', (data) => {
+            const result = document.getElementById('result');
+            result.innerHTML = ''; // Clear old data
+
+            // Add each user as a new row
+            data.forEach((user) => {
+                result.innerHTML += `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                    </tr>
+                `;
+            });
+        });
+        function addUser(){
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            socket.emit('add-user', { name, email });
+        }
+
+        function updateUser(){
+            const id = Number(document.getElementById('update-id').value);
+            const name = document.getElementById('update-name').value;
+            const email = document.getElementById('update-email').value;
+            if (!id) return alert('Please provide a numeric ID to update');
+            socket.emit('update-user', { id, name, email });
+        }
+
+        function deleteUser(){
+            const id = Number(document.getElementById('delete-id').value);
+            if (!id) return alert('Please provide a numeric ID to delete');
+            socket.emit('delete-user', id);
+        }
+
+        function updateUserEmail(){
+            const id = Number(document.getElementById('update-email-id').value);
+            const email = document.getElementById('update-email-email').value;
+            if (!id) return alert('Please provide a numeric ID to update email');
+            socket.emit('update-user-email', { id, email });
+        }
+
+        function updateUserName(){
+            const id = Number(document.getElementById('update-name-id').value);
+            const name = document.getElementById('update-name-name').value;
+            if (!id) return alert('Please provide a numeric ID to update name');
+            socket.emit('update-user-name', { id, name });
+        }
+
+        // When disconnected
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
+    </script>
+
+</body>
+
+</html>
