@@ -1,0 +1,30 @@
+# Node modules (top-level and nested)
+node_modules/
+**/node_modules/
+
+# Lock files
+package-lock.json
+yarn.lock
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# dotenv environment files
+.env
+.env.local
+.env.*.local
+
+# macOS
+.DS_Store
+
+# Build output
+dist/
+build/
+
+# Misc
+*.log
+.idea/
+.vscode/
