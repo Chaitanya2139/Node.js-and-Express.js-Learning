@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Chat App</h1>
+    <h2>Live Users Count :- <span id="count">0</span></h2>
+
+    <div id="message-box"> 
+
+
+
+    </div>
+
+    <div id="chat-box">
+        <h1>Message Box</h1>
+        Enter Message :- <input type="text" id="message">
+        <p id="typing"> </p> <br><br>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <div id="login-box">
+        Enter Username : <input onfocus="StartTyping()" onblur="StopTyping()" type="text" id="username">
+        <button onclick="joinChat()">Join Chat</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+        document.getElementById('chat-box').style.display='none'
+
+        const socket = io();
+
+        socket.on('users-count',(count)=>{
+            document.getElementById('count').innerText=count;
+        });
+
+        function joinChat(){
+            const username = document.getElementById('username').value;
+            socket.emit('new-user-joined',username);
+            document.getElementById('username').value='';
+            document.getElementById('login-box').style.display="none";
+            document.getElementById('chat-box').style.display="block";
+        }
+
+        function sendMessage(){
+            const message = document.getElementById('message').value;
+            socket.emit('send-message',message);
+            document.getElementById('message').value="";
+        }
+
+        socket.on('receive-message',(data)=>{
+            const p = document.createElement('p');
+            p.innerText=data.username+" - "+data.message;
+            document.getElementById('message-box').appendChild(p);
+        });
+    
+
+        function StartTyping(){
+            socket.emit('start-typing');
+
+        }
+
+
+        socket.on('user-started-typing',()=>{
+            document.getElementById('typing').innerHTML=`${username} is typing...</b>`;
+        });
+
+        function StopTyping(){
+            socket.emit('stop-typing');
+        }   
+
+
+
+    </script>
+</body>
+</html>
