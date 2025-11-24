@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/itmDB';
+// Default to `employeeDB` so seed.js and server use the same database by default.
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/employeeDB';
 
 mongoose.connect(MONGO_URI, {
     

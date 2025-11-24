@@ -13,7 +13,8 @@ const app = express();
 const PORT = 4000;
 
 app.use(express.json());
-app.use(cors('*'));
+// Allow cross-origin requests from the browser. Use the cors middleware correctly.
+app.use(cors());
 app.use(requestLogger);
 
 // Development Content Security Policy: allow same-origin resources and
@@ -51,7 +52,9 @@ app.get('/__csp__', (req, res) => {
     });
 });
 
-app.use('/employees', employeeRouter);
+// Mount API routes under /api/employees so frontend calls to /api/employees
+// match the router's internal routes (router defines '/' -> list/create)
+app.use('/api/employees', employeeRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

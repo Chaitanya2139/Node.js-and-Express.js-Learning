@@ -1,55 +1,49 @@
 import React, { useEffect, useState } from 'react'
 
-const Employee = () => {
-
-    const [employee, setEmployee] = useState();
+const Employee = ({ refreshKey }) => {
+    const [employee, setEmployee] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch("http://localhost:4000/employees", {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-                setEmployee(data);
-            })
-            .catch((error) => {
-                console.error("Error fetching employee data:", error);
-            });
+        const fetchData = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const res = await fetch("/api/employees");
+                if (!res.ok) throw new Error(`Server responded ${res.status}`);
+                const data = await res.json();
+                setEmployee(data || []);
+            } catch (err) {
+                console.error("Error fetching employee data:", err);
+                setError(err.message);
+                setEmployee([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
     }, []);
-  return (
-    <>
-        <h1>Employee</h1>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Department</th>
-                    <th>Salary</th>
-                </tr>
-            </thead>
-            <tbody>
-                {employee && employee.map((emp) => (
-                    <tr key={emp._id}>
-                        <td>{emp._id}</td>
-                        <td>{emp.name}</td>
-                        <td>{emp.email}</td>
-                        <td>{emp.role}</td>
-                        <td>{emp.department}</td>
-                        <td>{emp.salary}</td>
-                    </tr>
-                ))}
-            </tbody>
-        </table>
-    </>
-  )
+    return (
+        <div>
+            <h1>Employee</h1>
+            {loading && <p>Loading...</p>}
+            {error && <p style={{color: 'red'}}>Error: {error}</p>}
+            {!loading && !error && (
+                <ul>
+                    {employee.length === 0 ? (
+                        <li>No employees found.</li>
+                    ) : (
+                        employee.map(emp => (
+                            <li key={emp._id}>{emp.name} — {emp.email} — {emp.role} — {emp.department} — ${emp.salary}</li>
+                        ))
+                    )}
+                </ul>
+            )}
+        </div>
+    )
 }
 
 export default Employee
+                    
