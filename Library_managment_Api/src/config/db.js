@@ -1,6 +1,9 @@
 const mongoose=require('mongoose');
+require('dotenv').config();
 
-mongoose.connect('mongodb+srv://grandtable68_db_user:elevatecoders@cluster0.udvgvoe.mongodb.net/?appName=Cluster0');
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/libraryDB';
+
+mongoose.connect(MONGO_URI);
 
 const db=mongoose.connection;
 

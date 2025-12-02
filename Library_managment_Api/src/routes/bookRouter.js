@@ -1,5 +1,5 @@
 const express=require('express');
-const {getAllBooks,getBookById,createBook,uppdateBook,deleteBook}=require('./controllers/bookController');  
+const {getAllBooks,getBookById,createBook,uppdateBook,deleteBook}=require('../controllers/bookController');  
 
 const router=express.Router();
 
